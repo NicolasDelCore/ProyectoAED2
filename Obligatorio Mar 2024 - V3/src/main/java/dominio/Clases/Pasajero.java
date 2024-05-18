@@ -1,9 +1,7 @@
-package dominio;
+package dominio.Clases;
 import interfaz.Categoria;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import java.util.Objects;
 
 public class Pasajero implements Comparable<Pasajero> {
 

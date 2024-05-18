@@ -1,9 +1,4 @@
-package dominio;
-
-import interfaz.Categoria;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+package dominio.TDD;
 
 public class TuplaTInt<T> {
 

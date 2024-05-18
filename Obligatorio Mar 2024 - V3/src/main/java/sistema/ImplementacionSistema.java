@@ -1,7 +1,9 @@
 package sistema;
 
+import dominio.Clases.*;
+import dominio.TDD.*;
+import dominio.TDD.grafo.*;
 import interfaz.*;
-import dominio.*;
 
 import java.util.Objects;
 
@@ -17,6 +19,8 @@ public class ImplementacionSistema implements Sistema {
     ABB<Pasajero> pasajerosEstandar = new ABB<Pasajero>();
     ABB<Aerolinea> aerolineas = new ABB<Aerolinea>();
     ABB<Aeropuerto> aeropuertos = new ABB<Aeropuerto>();
+    ABB<Vuelo> vuelos = new ABB<Vuelo>();
+    Grafo conexiones = new Grafo(100);
 
     @Override
     public Retorno inicializarSistema(int maxAeropuertos, int maxAerolineas) {
@@ -162,12 +166,87 @@ public class ImplementacionSistema implements Sistema {
 
     @Override
     public Retorno registrarConexion(String codigoAeropuertoOrigen, String codigoAeropuertoDestino, double kilometros) {
-        return Retorno.noImplementada();
+
+        if (kilometros <= 0) {
+            return Retorno.error(Retorno.Resultado.ERROR_1, "Error 1: Debe ingresar más de 0 Kilómetros.");
+        }
+
+        if (Objects.equals(codigoAeropuertoOrigen, "") || codigoAeropuertoOrigen == null || Objects.equals(codigoAeropuertoDestino, "") || codigoAeropuertoDestino == null) {
+            return Retorno.error(Retorno.Resultado.ERROR_2, "Error 2: Parámetro vacío. Debe ingresar NOMBRE y CÓDIGO del nuevo Aeropuerto.");
+        }
+
+        //Aeropuerto aOrigen = (Aeropuerto) aeropuertos.encontrar( new Aeropuerto("", codigoAeropuertoOrigen)).getDato();
+        Aeropuerto aOrigen = new Aeropuerto("", codigoAeropuertoOrigen);
+        if (!aeropuertos.pertenece(aOrigen)) {
+            return Retorno.error(Retorno.Resultado.ERROR_3, "Error 3: No se encontró aeropuerto de origen. Revise el CÓDIGO proveído del Aeropuerto.");
+        }
+
+        //Aeropuerto aDestino = (Aeropuerto) aeropuertos.encontrar( new Aeropuerto("", codigoAeropuertoDestino)).getDato();
+        Aeropuerto aDestino = new Aeropuerto("", codigoAeropuertoDestino);
+        if (!aeropuertos.pertenece(aDestino)) {
+            return Retorno.error(Retorno.Resultado.ERROR_4, "Error 4: No se encontró aeropuerto de destino. Revise el CÓDIGO proveído del Aeropuerto.");
+        }
+
+        if ( conexiones.existeAristaEntre(codigoAeropuertoOrigen, codigoAeropuertoDestino) ){
+            return Retorno.error(Retorno.Resultado.ERROR_5, "Error 5: Ya hay una conexión registrada entre esos dos aeropuertos. Sólo se permite una conexión entre aeropuertos.");
+        }
+
+        conexiones.agregarVertice(codigoAeropuertoOrigen);
+        conexiones.agregarVertice(codigoAeropuertoDestino);
+        conexiones.agregarArista(codigoAeropuertoOrigen, codigoAeropuertoDestino, kilometros);
+        return Retorno.ok();
     }
 
     @Override
-    public Retorno registrarVuelo(String codigoCiudadOrigen, String codigoAeropuertoDestino, String codigoDeVuelo, double combustible, double minutos, double costoEnDolares, String codigoAerolinea) {
-        return Retorno.noImplementada();
+    public Retorno registrarVuelo(String codigoAeropuertoOrigen, String codigoAeropuertoDestino, String codigoDeVuelo, double combustible, double minutos, double costoEnDolares, String codigoAerolinea) {
+
+        //1. Si alguno de los parámetros double es menor o igual a 0.
+        if ( combustible <= 0 || minutos <= 0 || costoEnDolares <= 0){
+            return Retorno.error(Retorno.Resultado.ERROR_1, "Error 1: Por favor verifique que Combustible, Minutos y Costo En Dólares deben sean mayores a 0.");
+        }
+
+        //2. Si alguno de los parámetros String es vacío o null.
+        if (Objects.equals(codigoAeropuertoDestino, "") || codigoAeropuertoDestino == null ||
+            Objects.equals(codigoAeropuertoOrigen, "") || codigoAeropuertoOrigen == null ||
+            Objects.equals(codigoDeVuelo, "") || codigoDeVuelo == null ||
+            Objects.equals(codigoAerolinea, "") || codigoAerolinea == null) {
+            return Retorno.error(Retorno.Resultado.ERROR_2, "Error 2: Parámetro vacío. Debe ingresar codigoAeropuertoDestino, codigoCiudadOrigen, codigoDeVuelo y codigoAerolinea.");
+        }
+
+        //3. Si no existe el aeropuerto de origen.
+        Aeropuerto aOrigen = new Aeropuerto("", codigoAeropuertoOrigen);
+        if (!aeropuertos.pertenece(aOrigen)) {
+            return Retorno.error(Retorno.Resultado.ERROR_3, "Error 3: No se encontró aeropuerto de origen. Revise el CÓDIGO proveído del Aeropuerto.");
+        }
+
+        //4. Si no existe el aeropuerto de destino.
+        Aeropuerto aDestino = new Aeropuerto("", codigoAeropuertoDestino);
+        if (!aeropuertos.pertenece(aDestino)) {
+            return Retorno.error(Retorno.Resultado.ERROR_4, "Error 4: No se encontró aeropuerto de destino. Revise el CÓDIGO proveído del Aeropuerto.");
+        }
+
+        //5. Si no existe la aerolínea indicada.
+        Aerolinea aerolinea = new Aerolinea("", codigoAerolinea);
+        if (!aerolineas.pertenece(aerolinea)) {
+            return Retorno.error(Retorno.Resultado.ERROR_5, "Error 5: No se encontró la aerolínea. Revise el CÓDIGO proveído de la Aerolínea.");
+        }
+
+        //6. Si no existe una conexión entre origen y destino
+        if ( !conexiones.existeAristaEntre(codigoAeropuertoOrigen, codigoAeropuertoDestino) ){
+            return Retorno.error(Retorno.Resultado.ERROR_6, "Error 6: No hay una conexión registrada entre esos dos aeropuertos. Por favor, verifique los códigos ingresados o conecte los aeropuertos.");
+        }
+
+        //Crear vuelo
+        Vuelo miVuelo = new Vuelo(codigoDeVuelo, codigoAeropuertoOrigen, codigoAeropuertoDestino, codigoAerolinea, combustible, minutos, costoEnDolares);
+
+        //7. Si ya existe un vuelo con ese código en esa conexión
+        if (vuelos.pertenece(miVuelo)){
+            return Retorno.error(Retorno.Resultado.ERROR_7, "Error 6: Ese vuelo ya se encuentra registrado. Por favor verifique detalles del vuelo a registrar.");
+        }
+
+        //Completar registro
+        vuelos.insertar(miVuelo);
+        return Retorno.ok();
     }
 
     @Override

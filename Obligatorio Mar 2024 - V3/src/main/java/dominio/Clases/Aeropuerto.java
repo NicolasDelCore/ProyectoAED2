@@ -1,16 +1,13 @@
-package dominio;
+package dominio.Clases;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-public class Aerolinea implements Comparable<Aerolinea> {
+public class Aeropuerto implements Comparable<Aeropuerto> {
 
     //Atribs
     private String nombre;
     private String codigo;
 
     //Constructor
-    public Aerolinea(String nombre, String codigo) {
+    public Aeropuerto(String nombre, String codigo) {
         this.nombre = nombre;
         this.codigo = codigo;
     }
@@ -25,7 +22,7 @@ public class Aerolinea implements Comparable<Aerolinea> {
     }
 
     @Override
-    public int compareTo(Aerolinea a){
+    public int compareTo(Aeropuerto a){
         return this.codigo.compareTo(a.getCodigo()); //Si devuelve 0, son iguales, si devuelve positivo, lo que haya a la izq (this.cedula) es mayor
     }
 

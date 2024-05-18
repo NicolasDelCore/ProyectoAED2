@@ -1,13 +1,13 @@
-package dominio;
+package dominio.Clases;
 
-public class Aeropuerto implements Comparable<Aeropuerto> {
+public class Aerolinea implements Comparable<Aerolinea> {
 
     //Atribs
     private String nombre;
     private String codigo;
 
     //Constructor
-    public Aeropuerto(String nombre, String codigo) {
+    public Aerolinea(String nombre, String codigo) {
         this.nombre = nombre;
         this.codigo = codigo;
     }
@@ -22,7 +22,7 @@ public class Aeropuerto implements Comparable<Aeropuerto> {
     }
 
     @Override
-    public int compareTo(Aeropuerto a){
+    public int compareTo(Aerolinea a){
         return this.codigo.compareTo(a.getCodigo()); //Si devuelve 0, son iguales, si devuelve positivo, lo que haya a la izq (this.cedula) es mayor
     }
 
