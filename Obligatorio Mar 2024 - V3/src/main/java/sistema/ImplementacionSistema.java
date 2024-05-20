@@ -188,7 +188,7 @@ public class ImplementacionSistema implements Sistema {
             return Retorno.error(Retorno.Resultado.ERROR_4, "Error 4: No se encontró aeropuerto de destino. Revise el CÓDIGO proveído del Aeropuerto.");
         }
 
-        if ( conexiones.existeAristaEntre(codigoAeropuertoOrigen, codigoAeropuertoDestino) ){
+        if ( conexiones.existeAlgunaAristaEntre(codigoAeropuertoOrigen, codigoAeropuertoDestino) ){
             return Retorno.error(Retorno.Resultado.ERROR_5, "Error 5: Ya hay una conexión registrada entre esos dos aeropuertos. Sólo se permite una conexión entre aeropuertos.");
         }
 
