@@ -143,12 +143,15 @@ public class Grafo {
         return costos[posVDestino];
     }
 
+    //Chequea si existe una arista en cualquier dirección entre los vértices: vertice ---- vertice2
+    //Usado para evitar el registro de conexiones bidireccionales
     public boolean existeAlgunaAristaEntre(String vertice1, String vertice2){
         Arista vert1a2 = obtenerArista(vertice1, vertice2);
         Arista vert2a1 = obtenerArista(vertice2, vertice1);
         return vert1a2 != null || vert2a1 != null;
     }
 
+    //Chequea si existe una arista en la dirección especificada: vertice1 ---> vertice2
     public boolean existeAristaEntre(String vertice1, String vertice2){
         return obtenerArista(vertice1, vertice2) != null;
     }

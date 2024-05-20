@@ -250,6 +250,24 @@ public class ImplementacionSistema implements Sistema {
 
     @Override
     public Retorno listadoAeropuertosCantDeEscalas(String codigoAeropuertoOrigen, int cantidad, String codigoAerolinea) {
+
+        //Errores
+        //1. Si la cantidad es menor que cero.
+        if (cantidad < 0) {
+            return Retorno.error(Retorno.Resultado.ERROR_1, "Error 1: Cantidad no puede ser menor a 0.");
+        }
+
+        //2. Si el aeropuerto no está registrado en el sistema.
+        Aeropuerto aOrigen = new Aeropuerto("", codigoAeropuertoOrigen);
+        if (!aeropuertos.pertenece(aOrigen)) {
+            return Retorno.error(Retorno.Resultado.ERROR_2, "Error 2: No se encontró el aeropuerto. Revise el CÓDIGO proveído del Aeropuerto.");
+        }
+        //3. Si la aerolínea no está registrada en el sistema.
+        Aerolinea aerolinea = new Aerolinea("", codigoAerolinea);
+        if (!aerolineas.pertenece(aerolinea)) {
+            return Retorno.error(Retorno.Resultado.ERROR_3, "Error 3: No se encontró la aerolínea. Revise el CÓDIGO proveído de la Aerolínea.");
+        }
+
         return Retorno.noImplementada();
     }
 
