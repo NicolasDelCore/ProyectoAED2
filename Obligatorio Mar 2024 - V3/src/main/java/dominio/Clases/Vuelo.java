@@ -1,5 +1,9 @@
 package dominio.Clases;
 
+import dominio.TDD.grafo.Vertice;
+
+import java.util.Objects;
+
 public class Vuelo implements Comparable<Vuelo> {
 
     //Atribs
@@ -53,11 +57,19 @@ public class Vuelo implements Comparable<Vuelo> {
     }
 
     @Override
-    public int compareTo(Vuelo a){
+    public int compareTo(Vuelo vuelo){
         return
-                (this.codigoDeVuelo.compareTo(a.codigoDeVuelo) +
-                this.codigoAeropuertoOrigen.compareTo(a.codigoAeropuertoOrigen) +
-                this.codigoAeropuertoDestino.compareTo(a.codigoAeropuertoDestino) ) ; //Si devuelve 0, son iguales, si devuelve positivo, lo que haya a la izq (this.cedula) es mayor
+                (this.codigoDeVuelo.compareTo(vuelo.codigoDeVuelo) +
+                this.codigoAeropuertoOrigen.compareTo(vuelo.codigoAeropuertoOrigen) +
+                this.codigoAeropuertoDestino.compareTo(vuelo.codigoAeropuertoDestino) ) ; //Si devuelve 0, son iguales, si devuelve positivo, lo que haya a la izq (this.cedula) es mayor
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Vuelo vuelo = (Vuelo) o;
+        return this.compareTo(vuelo) == 0;
     }
 
     @Override

@@ -200,15 +200,15 @@ public class ImplementacionSistema implements Sistema {
     public Retorno registrarVuelo(String codigoAeropuertoOrigen, String codigoAeropuertoDestino, String codigoDeVuelo, double combustible, double minutos, double costoEnDolares, String codigoAerolinea) {
 
         //1. Si alguno de los parámetros double es menor o igual a 0.
-        if ( combustible <= 0 || minutos <= 0 || costoEnDolares <= 0){
+        if (combustible <= 0 || minutos <= 0 || costoEnDolares <= 0) {
             return Retorno.error(Retorno.Resultado.ERROR_1, "Error 1: Por favor verifique que Combustible, Minutos y Costo En Dólares deben sean mayores a 0.");
         }
 
         //2. Si alguno de los parámetros String es vacío o null.
         if (Objects.equals(codigoAeropuertoDestino, "") || codigoAeropuertoDestino == null ||
-            Objects.equals(codigoAeropuertoOrigen, "") || codigoAeropuertoOrigen == null ||
-            Objects.equals(codigoDeVuelo, "") || codigoDeVuelo == null ||
-            Objects.equals(codigoAerolinea, "") || codigoAerolinea == null) {
+                Objects.equals(codigoAeropuertoOrigen, "") || codigoAeropuertoOrigen == null ||
+                Objects.equals(codigoDeVuelo, "") || codigoDeVuelo == null ||
+                Objects.equals(codigoAerolinea, "") || codigoAerolinea == null) {
             return Retorno.error(Retorno.Resultado.ERROR_2, "Error 2: Parámetro vacío. Debe ingresar codigoAeropuertoDestino, codigoCiudadOrigen, codigoDeVuelo y codigoAerolinea.");
         }
 
@@ -230,8 +230,10 @@ public class ImplementacionSistema implements Sistema {
             return Retorno.error(Retorno.Resultado.ERROR_5, "Error 5: No se encontró la aerolínea. Revise el CÓDIGO proveído de la Aerolínea.");
         }
 
+        Arista miConexion = conexiones.obtenerArista(codigoAeropuertoOrigen, codigoAeropuertoDestino);
+
         //6. Si no existe una conexión entre origen y destino
-        if ( !conexiones.existeAristaEntre(codigoAeropuertoOrigen, codigoAeropuertoDestino) ){
+        if (miConexion == null) {
             return Retorno.error(Retorno.Resultado.ERROR_6, "Error 6: No hay una conexión registrada entre esos dos aeropuertos. Por favor, verifique los códigos ingresados o conecte los aeropuertos.");
         }
 
@@ -239,12 +241,12 @@ public class ImplementacionSistema implements Sistema {
         Vuelo miVuelo = new Vuelo(codigoDeVuelo, codigoAeropuertoOrigen, codigoAeropuertoDestino, codigoAerolinea, combustible, minutos, costoEnDolares);
 
         //7. Si ya existe un vuelo con ese código en esa conexión
-        if (vuelos.pertenece(miVuelo)){
-            return Retorno.error(Retorno.Resultado.ERROR_7, "Error 6: Ese vuelo ya se encuentra registrado. Por favor verifique detalles del vuelo a registrar.");
+        if (miConexion.estaEnLista(miVuelo)) {
+            return Retorno.error(Retorno.Resultado.ERROR_7, "Error 7: Ese vuelo ya se encuentra registrado. Por favor verifique detalles del vuelo a registrar.");
         }
 
         //Completar registro
-        vuelos.insertar(miVuelo);
+        miConexion.agregarALista(miVuelo); //Para mantener la relación de vida de Vuelos con Conexiones, Arista tiene una Lista de elementos que contendrá los vuelos
         return Retorno.ok();
     }
 
