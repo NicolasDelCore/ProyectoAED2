@@ -159,6 +159,7 @@ public class ImplementacionSistema implements Sistema {
         }
 
         aeropuertos.insertar(a);
+        conexiones.agregarVertice(a.getCodigo());
         aeropuertosRegistrados++;
 
         return Retorno.ok();
@@ -191,8 +192,6 @@ public class ImplementacionSistema implements Sistema {
             return Retorno.error(Retorno.Resultado.ERROR_5, "Error 5: Ya hay una conexión registrada entre esos dos aeropuertos. Sólo se permite una conexión entre aeropuertos.");
         }
 
-        conexiones.agregarVertice(codigoAeropuertoOrigen);
-        conexiones.agregarVertice(codigoAeropuertoDestino);
         conexiones.agregarArista(codigoAeropuertoOrigen, codigoAeropuertoDestino, kilometros);
         return Retorno.ok();
     }
