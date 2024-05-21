@@ -85,6 +85,19 @@ public class Lista<T> {
         };
     }
 
+    public T devolverPos(int posicion){
+        if (posicion == 0){
+            return inicio.dato;
+        }
+        NodoLista<T> nodo = inicio.sig;
+        for(int i = 1; i < this.largo() && i <= posicion; i++){
+            if (i == posicion){
+                return nodo.dato;
+            }
+        }
+        return null;
+    }
+
     private class NodoLista<Q> {
         private Q dato;
         private NodoLista<Q> sig;

@@ -2,19 +2,19 @@ package dominio.TDD.grafo;
 
 import java.util.Objects;
 
-public class Vertice {
-    private String nombre;
+public class Vertice<T> {
+    private T dato;
 
-    public Vertice(String nombre) {
-        this.nombre = nombre;
+    public Vertice(T dato) {
+        this.dato = dato;
     }
 
-    public String getNombre() {
-        return nombre;
+    public T getDato() {
+        return dato;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setDato (T dato) {
+        this.dato = dato;
     }
 
     @Override
@@ -22,13 +22,14 @@ public class Vertice {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Vertice vertice = (Vertice) o;
-        return Objects.equals(nombre, vertice.nombre);
+        return Objects.equals(dato, vertice.dato);
     }
 
     @Override
     public String toString() {
         return "Vertice{" +
-                "nombre='" + nombre + '\'' +
+                "dato='" + dato + '\'' +
                 '}';
     }
+
 }

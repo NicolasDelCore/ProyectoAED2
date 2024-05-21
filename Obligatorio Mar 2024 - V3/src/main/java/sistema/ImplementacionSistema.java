@@ -18,9 +18,8 @@ public class ImplementacionSistema implements Sistema {
     ABB<Pasajero> pasajerosFrecuente = new ABB<Pasajero>();
     ABB<Pasajero> pasajerosEstandar = new ABB<Pasajero>();
     ABB<Aerolinea> aerolineas = new ABB<Aerolinea>();
-    ABB<Aeropuerto> aeropuertos = new ABB<Aeropuerto>();
     ABB<Vuelo> vuelos = new ABB<Vuelo>();
-    Grafo conexiones = new Grafo(100);
+    Grafo<Aeropuerto> conexiones = new Grafo(1000);
 
     @Override
     public Retorno inicializarSistema(int maxAeropuertos, int maxAerolineas) {
@@ -154,12 +153,11 @@ public class ImplementacionSistema implements Sistema {
 
         Aeropuerto a = new Aeropuerto(nombre, codigo);
 
-        if (aeropuertos.pertenece(a)){
+        if (conexiones.existeVertice(a)){
             return Retorno.error(Retorno.Resultado.ERROR_3, "Error 3: Ya existe un aeropuerto con ese código. Los códigos de aeropuertos deben ser únicos en el sistema.");
         }
 
-        aeropuertos.insertar(a);
-        conexiones.agregarVertice(a.getCodigo());
+        conexiones.agregarVertice(a);
         aeropuertosRegistrados++;
 
         return Retorno.ok();
@@ -176,23 +174,21 @@ public class ImplementacionSistema implements Sistema {
             return Retorno.error(Retorno.Resultado.ERROR_2, "Error 2: Parámetro vacío. Debe ingresar NOMBRE y CÓDIGO del nuevo Aeropuerto.");
         }
 
-        //Aeropuerto aOrigen = (Aeropuerto) aeropuertos.encontrar( new Aeropuerto("", codigoAeropuertoOrigen)).getDato();
         Aeropuerto aOrigen = new Aeropuerto("", codigoAeropuertoOrigen);
-        if (!aeropuertos.pertenece(aOrigen)) {
+        if (!conexiones.existeVertice(aOrigen)) {
             return Retorno.error(Retorno.Resultado.ERROR_3, "Error 3: No se encontró aeropuerto de origen. Revise el CÓDIGO proveído del Aeropuerto.");
         }
 
-        //Aeropuerto aDestino = (Aeropuerto) aeropuertos.encontrar( new Aeropuerto("", codigoAeropuertoDestino)).getDato();
         Aeropuerto aDestino = new Aeropuerto("", codigoAeropuertoDestino);
-        if (!aeropuertos.pertenece(aDestino)) {
+        if (!conexiones.existeVertice(aDestino)) {
             return Retorno.error(Retorno.Resultado.ERROR_4, "Error 4: No se encontró aeropuerto de destino. Revise el CÓDIGO proveído del Aeropuerto.");
         }
 
-        if ( conexiones.existeAlgunaAristaEntre(codigoAeropuertoOrigen, codigoAeropuertoDestino) ){
+        if ( conexiones.existeAlgunaAristaEntre(aOrigen, aDestino) ){
             return Retorno.error(Retorno.Resultado.ERROR_5, "Error 5: Ya hay una conexión registrada entre esos dos aeropuertos. Sólo se permite una conexión entre aeropuertos.");
         }
 
-        conexiones.agregarArista(codigoAeropuertoOrigen, codigoAeropuertoDestino, kilometros);
+        conexiones.agregarArista(aOrigen, aDestino, kilometros);
         return Retorno.ok();
     }
 
@@ -214,13 +210,13 @@ public class ImplementacionSistema implements Sistema {
 
         //3. Si no existe el aeropuerto de origen.
         Aeropuerto aOrigen = new Aeropuerto("", codigoAeropuertoOrigen);
-        if (!aeropuertos.pertenece(aOrigen)) {
+        if (!conexiones.existeVertice(aOrigen)) {
             return Retorno.error(Retorno.Resultado.ERROR_3, "Error 3: No se encontró aeropuerto de origen. Revise el CÓDIGO proveído del Aeropuerto.");
         }
 
         //4. Si no existe el aeropuerto de destino.
         Aeropuerto aDestino = new Aeropuerto("", codigoAeropuertoDestino);
-        if (!aeropuertos.pertenece(aDestino)) {
+        if (!conexiones.existeVertice(aDestino)) {
             return Retorno.error(Retorno.Resultado.ERROR_4, "Error 4: No se encontró aeropuerto de destino. Revise el CÓDIGO proveído del Aeropuerto.");
         }
 
@@ -230,7 +226,7 @@ public class ImplementacionSistema implements Sistema {
             return Retorno.error(Retorno.Resultado.ERROR_5, "Error 5: No se encontró la aerolínea. Revise el CÓDIGO proveído de la Aerolínea.");
         }
 
-        Arista miConexion = conexiones.obtenerArista(codigoAeropuertoOrigen, codigoAeropuertoDestino);
+        Arista miConexion = conexiones.obtenerArista(aOrigen, aDestino);
 
         //6. Si no existe una conexión entre origen y destino
         if (miConexion == null) {
@@ -261,7 +257,7 @@ public class ImplementacionSistema implements Sistema {
 
         //2. Si el aeropuerto no está registrado en el sistema.
         Aeropuerto aOrigen = new Aeropuerto("", codigoAeropuertoOrigen);
-        if (!aeropuertos.pertenece(aOrigen)) {
+        if (!conexiones.existeVertice(aOrigen)) {
             return Retorno.error(Retorno.Resultado.ERROR_2, "Error 2: No se encontró el aeropuerto. Revise el CÓDIGO proveído del Aeropuerto.");
         }
         //3. Si la aerolínea no está registrada en el sistema.
@@ -270,7 +266,12 @@ public class ImplementacionSistema implements Sistema {
             return Retorno.error(Retorno.Resultado.ERROR_3, "Error 3: No se encontró la aerolínea. Revise el CÓDIGO proveído de la Aerolínea.");
         }
 
-        return Retorno.noImplementada();
+        //Consideraciones:
+        //1. Debe devolver aeropuertos encontrados HASTA "cantidad" de conexiones.
+        //2. Debe devolver aeropuertos con VUELOS de la AEROLINEA especificada.
+        //3. Debe devolver aeropuertos ORDENADOS POR CÓDIGO ASCENDENTE
+
+        return Retorno.ok(conexiones.bfsLimitadoOrdenado(aOrigen, cantidad, codigoAerolinea));
     }
 
     @Override

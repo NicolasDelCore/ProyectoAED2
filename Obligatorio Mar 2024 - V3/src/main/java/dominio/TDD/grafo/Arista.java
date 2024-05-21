@@ -1,13 +1,13 @@
 package dominio.TDD.grafo;
 import dominio.TDD.Lista;
+import dominio.Clases.Vuelo;
 
 public class Arista<T> {
     public double peso;
-    public Lista<T> elementos;
+    public Lista<Vuelo> elementos = new Lista<>();
 
     public Arista(double peso) {
         this.peso = peso;
-        this.elementos = new Lista<T>();
     }
 
     public double getPeso() {
@@ -18,15 +18,11 @@ public class Arista<T> {
         this.peso = peso;
     }
 
-    public void verElementos(){
-       elementos.imprimirDatos();
-    }
-
-    public void agregarALista(T dato){
+    public void agregarALista(Vuelo dato) {
         elementos.insertar(dato);
     }
 
-    public boolean estaEnLista(T dato){
+    public boolean estaEnLista(Vuelo dato){
         return elementos.existe(dato);
     }
 

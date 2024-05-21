@@ -1,8 +1,11 @@
 package dominio.TDD.grafo;
-import dominio.TDD.Lista;
-import dominio.TDD.Cola;
+import dominio.Clases.Aeropuerto;
+import dominio.Clases.Vuelo;
+import dominio.TDD.*;
 
-public class Grafo {
+import java.util.Objects;
+
+public class Grafo<T> {
     private Vertice[] vertices;
     private Arista[][] aristas;
     private final int maxVertices;
@@ -14,16 +17,16 @@ public class Grafo {
         aristas = new Arista[maxVertices][maxVertices];
     }
 
-    public void agregarVertice(String nombreVertice) {
+    public void agregarVertice(T dato) {
         if (cantidad < maxVertices) {
             int posLibre = obtenerPosLibre();
-            vertices[posLibre] = new Vertice(nombreVertice);
+            vertices[posLibre] = new Vertice<>(dato);
             cantidad++;
         }
     }
 
-    public void borrarVertice(String nombreVertice) {
-        int posVaBorrar = obtenerPos(new Vertice(nombreVertice));
+    public void borrarVertice(T dato) {
+        int posVaBorrar = obtenerPos(new Vertice(dato));
 
         for (int i = 0; i < aristas.length; i++) {
             aristas[posVaBorrar][i] = null;
@@ -33,21 +36,22 @@ public class Grafo {
         cantidad--;
     }
 
-    public void agregarArista(String vInicial, String vFinal, double kilometros) {
+    public void agregarArista(T vInicial, T vFinal, double kilometros) {
         int posVInicial = obtenerPos(new Vertice(vInicial));
         int posVFinal = obtenerPos(new Vertice(vFinal));
 
+        //System.out.println(posVInicial + " " + posVFinal);
         aristas[posVInicial][posVFinal] = new Arista(kilometros);
     }
 
-    public void borrarArista(String vInicial, String vFinal) {
+    public void borrarArista(T vInicial, T vFinal) {
         int posVInicial = obtenerPos(new Vertice(vInicial));
         int posVFinal = obtenerPos(new Vertice(vFinal));
 
         aristas[posVInicial][posVFinal] = null;
     }
 
-    public Arista obtenerArista(String vInicial, String vFinal) {
+    public Arista obtenerArista(T vInicial, T vFinal) {
         int posVInicial = obtenerPos(new Vertice(vInicial));
         int posVFinal = obtenerPos(new Vertice(vFinal));
 
@@ -58,8 +62,8 @@ public class Grafo {
         return aristas[posVInicial][posVFinal];
     }
 
-    public boolean existeVertice(String nombreVertice) {
-        int posABuscar = obtenerPos(new Vertice(nombreVertice));
+    public boolean existeVertice(T dato) {
+        int posABuscar = obtenerPos(new Vertice(dato));
         return posABuscar >= 0;
     }
 
@@ -75,12 +79,6 @@ public class Grafo {
         return adyacentes;
     }
 
-    public void dfs(String nombreVertice) {
-        boolean[] visitados = new boolean[maxVertices];
-        int posV = obtenerPos(new Vertice(nombreVertice));
-        dfs(posV, visitados);
-    }
-
     public void bfs(String nombreVertice) {
         int posV = obtenerPos(new Vertice(nombreVertice));
         boolean[] visitados = new boolean[maxVertices];
@@ -91,12 +89,63 @@ public class Grafo {
             int pos = cola.desencolar();
             System.out.println(vertices[pos]);
             for (int i = 0; i < aristas.length; i++) {
-                if (aristas[posV][i] != null && !visitados[i]) {
+                if (aristas[pos][i] != null && !visitados[i]) {
                     cola.encolar(i);
                     visitados[i] = true;
                 }
             }
         }
+    }
+
+    public String bfsLimitadoOrdenado(T vertice, int limite, String codigoAerolinea) {
+        int posV = obtenerPos(new Vertice<>(vertice));
+        boolean[] visitados = new boolean[maxVertices];
+        Cola<Integer> cola = new Cola<>();
+        int[] niveles = new int[maxVertices];
+        cola.encolar(posV);
+        visitados[posV] = true;
+        niveles[posV] = 0;
+        ABB<Aeropuerto> resultado = new ABB<>();
+
+        while (!cola.esVacia()) {
+            int pos = cola.desencolar();
+            int nivelActual = niveles[pos];
+
+            if (nivelActual > limite) {
+                //System.out.println(resultado.listarAscendentes());
+                return resultado.listarAscendentes();
+            }
+
+            resultado.insertar((Aeropuerto) vertices[pos].getDato());
+
+            //System.out.println(vertices[pos].getDato());
+
+            for (int i = 0; i < maxVertices; i++) {
+                Arista arista = aristas[pos][i];
+                if (arista != null && !visitados[i]) {
+                    boolean aerolineaConfirmada = false;
+                    for (int k = 0; k < arista.elementos.largo() && !aerolineaConfirmada; k++){
+                        Vuelo vuelo = (Vuelo)arista.elementos.devolverPos(k);
+                        if (Objects.equals(vuelo.getCodigoAerolinea(), codigoAerolinea)){
+                            aerolineaConfirmada = true;
+                        }
+                    }
+                    if(aerolineaConfirmada) {
+                        cola.encolar(i);
+                        niveles[i] = nivelActual + 1;
+                        visitados[i] = true;
+                    }
+                }
+            }
+        }
+        //System.out.println(resultado.listarAscendentes());
+        return resultado.listarAscendentes();
+    }
+
+    public void dfs(String nombreVertice) {
+        boolean[] visitados = new boolean[maxVertices];
+        int posV = obtenerPos(new Vertice(nombreVertice));
+        dfs(posV, visitados);
     }
 
     private void dfs(int posV, boolean[] visitados) {
@@ -134,7 +183,7 @@ public class Grafo {
                         int distanciaNueva = costos[pos] + (int) aristas[pos][i].peso;
                         if(distanciaNueva<costos[i]){
                             costos[i]=distanciaNueva;
-                            vengo[i]=vertices[pos].getNombre();
+                            vengo[i]=vertices[pos].getDato().toString();
                         }
                     }
                 }
@@ -145,14 +194,14 @@ public class Grafo {
 
     //Chequea si existe una arista en cualquier dirección entre los vértices: vertice ---- vertice2
     //Usado para evitar el registro de conexiones bidireccionales
-    public boolean existeAlgunaAristaEntre(String vertice1, String vertice2){
+    public boolean existeAlgunaAristaEntre(T vertice1, T vertice2){
         Arista vert1a2 = obtenerArista(vertice1, vertice2);
         Arista vert2a1 = obtenerArista(vertice2, vertice1);
         return vert1a2 != null || vert2a1 != null;
     }
 
     //Chequea si existe una arista en la dirección especificada: vertice1 ---> vertice2
-    public boolean existeAristaEntre(String vertice1, String vertice2){
+    public boolean existeAristaEntre(T vertice1, T vertice2){
         return obtenerArista(vertice1, vertice2) != null;
     }
 
@@ -167,7 +216,6 @@ public class Grafo {
         }
         return posMin;
     }
-
 
     private int obtenerPos(Vertice v) {
         for (int i = 0; i < vertices.length; i++) {

@@ -19,5 +19,4 @@ public class TuplaTInt<T> {
     public int getNumero() {
         return this.numero;
     }
-
 }
