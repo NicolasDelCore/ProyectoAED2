@@ -1,9 +1,5 @@
 package dominio.Clases;
 
-import dominio.TDD.grafo.Vertice;
-
-import java.util.Objects;
-
 public class Vuelo implements Comparable<Vuelo> {
 
     //Atribs

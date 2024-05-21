@@ -3,7 +3,7 @@ import dominio.TDD.grafo.Arista;
 import dominio.TDD.grafo.FiltrarArista;
 import java.util.Objects;
 
-public class FiltrarVuelo implements FiltrarArista<Aeropuerto> {
+public class FiltrarVuelo implements FiltrarArista<Vuelo> {
 
     private String codigoAerolinea;
 
@@ -12,7 +12,7 @@ public class FiltrarVuelo implements FiltrarArista<Aeropuerto> {
     }
 
     @Override
-    public boolean debeIncluirArista(Arista<Aeropuerto> arista) {
+    public boolean debeIncluirArista(Arista<Vuelo> arista) {
         for (int k = 0; k < arista.elementos.largo(); k++) {
             Vuelo vuelo = (Vuelo) arista.elementos.devolverPos(k);
             if (Objects.equals(vuelo.getCodigoAerolinea(), codigoAerolinea)) {

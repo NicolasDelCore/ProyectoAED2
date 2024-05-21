@@ -1,5 +1,4 @@
 package dominio.TDD.grafo;
-import dominio.Clases.Aeropuerto;
 import dominio.TDD.*;
 
 import java.util.Objects;
