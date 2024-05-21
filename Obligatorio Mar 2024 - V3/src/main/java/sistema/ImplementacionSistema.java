@@ -271,7 +271,7 @@ public class ImplementacionSistema implements Sistema {
         //2. Debe devolver aeropuertos con VUELOS de la AEROLINEA especificada.
         //3. Debe devolver aeropuertos ORDENADOS POR CÓDIGO ASCENDENTE
 
-        return Retorno.ok(conexiones.bfsLimitadoOrdenado(aOrigen, cantidad, codigoAerolinea));
+        return Retorno.ok(conexiones.bfsLimitadoOrdenado(aOrigen, cantidad, new FiltrarVuelo(codigoAerolinea)));
     }
 
     @Override

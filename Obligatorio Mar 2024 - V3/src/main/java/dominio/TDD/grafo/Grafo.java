@@ -1,11 +1,10 @@
 package dominio.TDD.grafo;
 import dominio.Clases.Aeropuerto;
-import dominio.Clases.Vuelo;
 import dominio.TDD.*;
 
 import java.util.Objects;
 
-public class Grafo<T> {
+public class Grafo<T extends Comparable<T>> {
     private Vertice[] vertices;
     private Arista[][] aristas;
     private final int maxVertices;
@@ -97,15 +96,16 @@ public class Grafo<T> {
         }
     }
 
-    public String bfsLimitadoOrdenado(T vertice, int limite, String codigoAerolinea) {
+    public String bfsLimitadoOrdenado(T vertice, int limite, FiltrarArista filtro) {
         int posV = obtenerPos(new Vertice<>(vertice));
         boolean[] visitados = new boolean[maxVertices];
-        Cola<Integer> cola = new Cola<>();
         int[] niveles = new int[maxVertices];
+        Cola<Integer> cola = new Cola<>();
+        ABB<T> resultado = new ABB<>();
+
         cola.encolar(posV);
         visitados[posV] = true;
         niveles[posV] = 0;
-        ABB<Aeropuerto> resultado = new ABB<>();
 
         while (!cola.esVacia()) {
             int pos = cola.desencolar();
@@ -116,25 +116,15 @@ public class Grafo<T> {
                 return resultado.listarAscendentes();
             }
 
-            resultado.insertar((Aeropuerto) vertices[pos].getDato());
-
+            resultado.insertar((T)vertices[pos].getDato());
             //System.out.println(vertices[pos].getDato());
 
             for (int i = 0; i < maxVertices; i++) {
                 Arista arista = aristas[pos][i];
-                if (arista != null && !visitados[i]) {
-                    boolean aerolineaConfirmada = false;
-                    for (int k = 0; k < arista.elementos.largo() && !aerolineaConfirmada; k++){
-                        Vuelo vuelo = (Vuelo)arista.elementos.devolverPos(k);
-                        if (Objects.equals(vuelo.getCodigoAerolinea(), codigoAerolinea)){
-                            aerolineaConfirmada = true;
-                        }
-                    }
-                    if(aerolineaConfirmada) {
-                        cola.encolar(i);
-                        niveles[i] = nivelActual + 1;
-                        visitados[i] = true;
-                    }
+                if (arista != null && !visitados[i] && filtro.debeIncluirArista(arista)) {
+                    cola.encolar(i);
+                    niveles[i] = nivelActual + 1;
+                    visitados[i] = true;
                 }
             }
         }
