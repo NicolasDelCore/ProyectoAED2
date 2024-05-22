@@ -184,7 +184,7 @@ public class ImplementacionSistema implements Sistema {
             return Retorno.error(Retorno.Resultado.ERROR_4, "Error 4: No se encontró aeropuerto de destino. Revise el CÓDIGO proveído del Aeropuerto.");
         }
 
-        if ( conexiones.existeAlgunaAristaEntre(aOrigen, aDestino) ){
+        if (conexiones.existeAlgunaAristaEntre(aOrigen, aDestino) ){
             return Retorno.error(Retorno.Resultado.ERROR_5, "Error 5: Ya hay una conexión registrada entre esos dos aeropuertos. Sólo se permite una conexión entre aeropuertos.");
         }
 
@@ -277,11 +277,30 @@ public class ImplementacionSistema implements Sistema {
 
     @Override
     public Retorno viajeCostoMinimoKilometros(String codigoCiudadOrigen, String codigoCiudadDestino) {
+        //Errores, 1 y 2
+
+        //1. Si alguno de los códigos es vacío o null.
+        if ( Objects.equals(codigoCiudadOrigen, "") || codigoCiudadOrigen == null || codigoCiudadDestino == null || Objects.equals(codigoCiudadDestino, "") ){
+            return Retorno.error(Retorno.Resultado.ERROR_1, "Error 1: Debe ingresar Código para Ciudad de Origen y Ciudad de Destino.");
+        }
+
+        //2. Si no hay camino entre el origen y el destino
+
         return Retorno.noImplementada();
     }
 
     @Override
     public Retorno viajeCostoMinimoEnMinutos(String codigoAeropuertoOrigen, String codigoAeropuertoDestino) {
+
+        //Errores, 1 y 2
+
+        //1. Si alguno de los códigos es vacío o null.
+        if (Objects.equals(codigoAeropuertoOrigen, "") || codigoAeropuertoOrigen == null || codigoAeropuertoDestino == null || Objects.equals(codigoAeropuertoDestino, "") ){
+            return Retorno.error(Retorno.Resultado.ERROR_1, "Error 1: Debe ingresar Código para Ciudad de Origen y Ciudad de Destino.");
+        }
+
+        //2. Si no hay camino entre el origen y el destino
+
         return Retorno.noImplementada();
     }
 
