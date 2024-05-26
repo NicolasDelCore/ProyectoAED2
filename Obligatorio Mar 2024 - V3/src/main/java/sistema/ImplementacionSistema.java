@@ -41,7 +41,7 @@ public class ImplementacionSistema implements Sistema {
     @Override
     public Retorno registrarPasajero(String cedula, String nombre, String telefono, Categoria categoria) {
 
-        if (Objects.equals(cedula, "") || cedula == null || Objects.equals(nombre, "") || nombre == null || Objects.equals(telefono, "") || telefono == null || categoria == null){
+        if (cedula != null && cedula.isBlank() || cedula == null || Objects.equals(nombre, "") || nombre == null || Objects.equals(telefono, "") || telefono == null || categoria == null){
             return Retorno.error(Retorno.Resultado.ERROR_1, "Error 1: Parámetro vacío. Debe rellenar cédula, nombre, teléfono y categoría.");
         }
 
@@ -284,7 +284,12 @@ public class ImplementacionSistema implements Sistema {
             return Retorno.error(Retorno.Resultado.ERROR_1, "Error 1: Debe ingresar Código para Ciudad de Origen y Ciudad de Destino.");
         }
 
+        int resultado = conexiones.dijkstra(codigoCiudadOrigen, codigoCiudadDestino);
+
         //2. Si no hay camino entre el origen y el destino
+        if (resultado == -1){
+            return Retorno.error(Retorno.Resultado.ERROR_2, "Error 2: No se encontró un camino entre Ciudad de Origen y Ciudad de Destino.");
+        }
 
         return Retorno.noImplementada();
     }
@@ -296,10 +301,15 @@ public class ImplementacionSistema implements Sistema {
 
         //1. Si alguno de los códigos es vacío o null.
         if (Objects.equals(codigoAeropuertoOrigen, "") || codigoAeropuertoOrigen == null || codigoAeropuertoDestino == null || Objects.equals(codigoAeropuertoDestino, "") ){
-            return Retorno.error(Retorno.Resultado.ERROR_1, "Error 1: Debe ingresar Código para Ciudad de Origen y Ciudad de Destino.");
+            return Retorno.error(Retorno.Resultado.ERROR_1, "Error 1: Debe ingresar Código para Aeropuerto de Origen y Aeropuerto de Destino.");
         }
 
+        int resultado = conexiones.dijkstra(codigoAeropuertoOrigen, codigoAeropuertoDestino);
+
         //2. Si no hay camino entre el origen y el destino
+        if (resultado == -1){
+            return Retorno.error(Retorno.Resultado.ERROR_2, "Error 2: No se encontró un camino entre Aeropuerto de Origen y Aeropuerto de Destino.");
+        }
 
         return Retorno.noImplementada();
     }

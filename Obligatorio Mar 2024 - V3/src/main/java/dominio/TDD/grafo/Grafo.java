@@ -119,7 +119,7 @@ public class Grafo<T extends Comparable<T>> {
             //System.out.println(vertices[pos].getDato());
 
             for (int i = 0; i < maxVertices; i++) {
-                Arista arista = aristas[pos][i];
+                Arista<T> arista = aristas[pos][i];
                 if (arista != null && !visitados[i] && filtro.debeIncluirArista(arista)) {
                     cola.encolar(i);
                     niveles[i] = nivelActual + 1;
