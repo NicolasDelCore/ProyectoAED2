@@ -147,38 +147,85 @@ public class Grafo<T extends Comparable<T>> {
         }
     }
 
-    public int dijkstra(String nombreVOrigen, String nombreVDestino){
-        int posVOrigen = obtenerPos(new Vertice(nombreVOrigen));
-        int posVDestino = obtenerPos(new Vertice(nombreVDestino));
+    public TuplaTInt dijkstra(T origen, T destino) {
 
+        int posVOrigen = obtenerPos(new Vertice(origen));
+        int posVDestino = obtenerPos(new Vertice(destino));
+
+        //declaración de arrays
         boolean[] visitados = new boolean[maxVertices];
         int[] costos = new int[maxVertices];
         String[] vengo = new String[maxVertices];
 
+        //inicialización de arrays
         for (int i = 0; i < maxVertices; i++) {
-            costos[i]= Integer.MAX_VALUE;
-            vengo[i]="-";
-            visitados[i]=false;
+            costos[i] = Integer.MAX_VALUE;
+            vengo[i] = "-";
+            visitados[i] = false;
         }
 
-        for (int v = 0; v < cantidad; v++) {
-            int pos = obtenerSiguenteVerticeNoVisitadoDeMenorCosto(costos,visitados);
+        //Inicializar recorridas: Marcamos 0 como distancia en el nodo de origen (al marcar 0 en la dist del nodo de origen, esto inicia el dijkstra porque el nodo de origen es el primero en seleccionarse con obtenerSiguenteVerticeNoVisitadoDeMenorCosto)
+        costos[posVOrigen] = 0;
 
-            if(pos!=-1){
-                visitados[pos]=true;
+        //Camino desde Origen al resto de los nodos (necesario completar para obtener camino mínimo a destino)
+        for (int v = 0; v < cantidad; v++) {
+            int pos = obtenerSiguenteVerticeNoVisitadoDeMenorCosto(costos, visitados);
+
+            if (pos != -1) {
+                visitados[pos] = true;
 
                 for (int i = 0; i < aristas.length; i++) {
-                    if(aristas[pos][i]!=null && !visitados[i]){
+                    if (aristas[pos][i] != null && !visitados[i]) {
                         int distanciaNueva = costos[pos] + (int) aristas[pos][i].peso;
-                        if(distanciaNueva<costos[i]){
-                            costos[i]=distanciaNueva;
-                            vengo[i]=vertices[pos].getDato().toString();
+                        if (distanciaNueva < costos[i]) {
+                            costos[i] = distanciaNueva;
+                            vengo[v] = vertices[pos].getDato().toString();
                         }
                     }
                 }
             }
         }
-        return costos[posVDestino];
+
+        //Agregar nodo destino
+        vengo[vengo.length -1] = vertices[posVDestino].getDato().toString();
+
+        //Formatear string de respuesta
+        String caminoRetorno = formatearArrayVengo(vengo);
+
+        //Tupla para resultado
+        TuplaTInt resultado = new TuplaTInt(caminoRetorno, costos[posVDestino]);
+
+        //System.out.println("Kilometros: " + resultado.getNumero());
+        System.out.println("Array de vengos: " + resultado.getDato());
+
+        return resultado;
+    }
+
+    private int obtenerSiguenteVerticeNoVisitadoDeMenorCosto(int[] costos, boolean[] visitados) {
+        int posMin = -1;
+        int min=Integer.MAX_VALUE;
+        for (int i = 0; i < maxVertices; i++) {
+            if(!visitados[i] && costos[i]<min){
+                min = costos[i];
+                posMin=i;
+            }
+        }
+        return posMin;
+    }
+
+    private String formatearArrayVengo(String[] vengo){
+        String camino = "";
+        for (int i = 0; i < vengo.length; i++){
+            if (!Objects.equals(vengo[i], "-") && !Objects.equals(vengo[i], "-1")) {
+                camino += vengo[i] + "|";
+            }
+        }
+
+        if (camino.length() > 1) { //sacar la última barrita "|" del resultado
+            camino = camino.substring(0, camino.length() - 1);
+        }
+
+        return camino;
     }
 
     //Chequea si existe una arista en cualquier dirección entre los vértices: vertice ---- vertice2
@@ -192,18 +239,6 @@ public class Grafo<T extends Comparable<T>> {
     //Chequea si existe una arista en la dirección especificada: vertice1 ---> vertice2
     public boolean existeAristaEntre(T vertice1, T vertice2){
         return obtenerArista(vertice1, vertice2) != null;
-    }
-
-    private int obtenerSiguenteVerticeNoVisitadoDeMenorCosto(int[] costos, boolean[] visitados) {
-        int posMin = -1;
-        int min=Integer.MAX_VALUE;
-        for (int i = 0; i < maxVertices; i++) {
-            if(!visitados[i] && costos[i]<min){
-                min=costos[i];
-                posMin=i;
-            }
-        }
-        return posMin;
     }
 
     private int obtenerPos(Vertice v) {

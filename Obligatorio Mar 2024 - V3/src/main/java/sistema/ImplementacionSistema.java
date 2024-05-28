@@ -276,39 +276,64 @@ public class ImplementacionSistema implements Sistema {
     }
 
     @Override
-    public Retorno viajeCostoMinimoKilometros(String codigoCiudadOrigen, String codigoCiudadDestino) {
-        //Errores, 1 y 2
+    public Retorno viajeCostoMinimoKilometros(String codigoAeropuertoOrigen, String codigoAeropuertoDestino) {
+
+        //Errores
 
         //1. Si alguno de los códigos es vacío o null.
-        if ( Objects.equals(codigoCiudadOrigen, "") || codigoCiudadOrigen == null || codigoCiudadDestino == null || Objects.equals(codigoCiudadDestino, "") ){
+        if ( Objects.equals(codigoAeropuertoOrigen, "") || codigoAeropuertoOrigen == null || codigoAeropuertoDestino == null || Objects.equals(codigoAeropuertoDestino, "") ){
             return Retorno.error(Retorno.Resultado.ERROR_1, "Error 1: Debe ingresar Código para Ciudad de Origen y Ciudad de Destino.");
         }
 
-        int resultado = conexiones.dijkstra(codigoCiudadOrigen, codigoCiudadDestino);
-
-        //2. Si no hay camino entre el origen y el destino
-        if (resultado == -1){
-            return Retorno.error(Retorno.Resultado.ERROR_2, "Error 2: No se encontró un camino entre Ciudad de Origen y Ciudad de Destino.");
+        //3. Si no existe el aeropuerto de origen.
+        Aeropuerto aOrigen = new Aeropuerto("", codigoAeropuertoOrigen);
+        if (!conexiones.existeVertice(aOrigen)) {
+            return Retorno.error(Retorno.Resultado.ERROR_3, "Error 3: No se encontró aeropuerto de origen. Revise el CÓDIGO proveído del Aeropuerto.");
         }
 
-        return Retorno.noImplementada();
+        //4. Si no existe el aeropuerto de destino.
+        Aeropuerto aDestino = new Aeropuerto("", codigoAeropuertoDestino);
+        if (!conexiones.existeVertice(aDestino)) {
+            return Retorno.error(Retorno.Resultado.ERROR_4, "Error 4: No se encontró aeropuerto de destino. Revise el CÓDIGO proveído del Aeropuerto.");
+        }
+
+        TuplaTInt resultado = conexiones.dijkstra(aOrigen, aDestino);
+
+        //2. Si no hay camino entre el origen y el destino.
+        if (resultado.getNumero() == Integer.MAX_VALUE){
+            return Retorno.error(Retorno.Resultado.ERROR_2, "Error 2: Los aeropuertos de origen y destino no tienen conexión posible.");
+        }
+
+        return Retorno.ok(resultado.getNumero(), resultado.getDato().toString());
     }
 
     @Override
     public Retorno viajeCostoMinimoEnMinutos(String codigoAeropuertoOrigen, String codigoAeropuertoDestino) {
 
-        //Errores, 1 y 2
+        //Errores 1 al 4
 
         //1. Si alguno de los códigos es vacío o null.
-        if (Objects.equals(codigoAeropuertoOrigen, "") || codigoAeropuertoOrigen == null || codigoAeropuertoDestino == null || Objects.equals(codigoAeropuertoDestino, "") ){
-            return Retorno.error(Retorno.Resultado.ERROR_1, "Error 1: Debe ingresar Código para Aeropuerto de Origen y Aeropuerto de Destino.");
+        if (Objects.equals(codigoAeropuertoOrigen, "") || codigoAeropuertoOrigen == null || codigoAeropuertoDestino == null || Objects.equals(codigoAeropuertoDestino, "")) {
+            return Retorno.error(Retorno.Resultado.ERROR_1, "Error 1: Debe ingresar Código para Ciudad de Origen y Ciudad de Destino.");
         }
 
-        int resultado = conexiones.dijkstra(codigoAeropuertoOrigen, codigoAeropuertoDestino);
+        //3. Si no existe el aeropuerto de origen.
+        Aeropuerto aOrigen = new Aeropuerto("", codigoAeropuertoOrigen);
+        if (!conexiones.existeVertice(aOrigen)) {
+            return Retorno.error(Retorno.Resultado.ERROR_3, "Error 3: No se encontró aeropuerto de origen. Revise el CÓDIGO proveído del Aeropuerto.");
+        }
 
-        //2. Si no hay camino entre el origen y el destino
-        if (resultado == -1){
-            return Retorno.error(Retorno.Resultado.ERROR_2, "Error 2: No se encontró un camino entre Aeropuerto de Origen y Aeropuerto de Destino.");
+        //4. Si no existe el aeropuerto de destino.
+        Aeropuerto aDestino = new Aeropuerto("", codigoAeropuertoDestino);
+        if (!conexiones.existeVertice(aDestino)) {
+            return Retorno.error(Retorno.Resultado.ERROR_4, "Error 4: No se encontró aeropuerto de destino. Revise el CÓDIGO proveído del Aeropuerto.");
+        }
+
+        TuplaTInt resultado = conexiones.dijkstra(aOrigen, aDestino);
+
+        //2. Si no hay camino entre el origen y el destino.
+        if (resultado.getNumero() == Integer.MAX_VALUE) {
+            return Retorno.error(Retorno.Resultado.ERROR_2, "Error 2: Los aeropuertos de origen y destino no tienen conexión posible.");
         }
 
         return Retorno.noImplementada();
