@@ -329,7 +329,9 @@ public class ImplementacionSistema implements Sistema {
             return Retorno.error(Retorno.Resultado.ERROR_4, "Error 4: No se encontró aeropuerto de destino. Revise el CÓDIGO proveído del Aeropuerto.");
         }
 
-        TuplaTInt resultado = conexiones.dijkstraPorMinutos(aOrigen, aDestino);
+        //Esta clase DijkstraTiempoDeVuelo es SÓLO para separar la implementación de Dijkstra que compara tiempos de Vuelo, para no tener que importar Vuelo en la clase genérica Grafo
+        DijkstraTiempoDeVuelo dij = new DijkstraTiempoDeVuelo();
+        TuplaTInt resultado = dij.dijkstraPorMinutos(aOrigen, aDestino, conexiones);
 
         //2. Si no hay camino entre el origen y el destino.
         if (resultado.getNumero() == Integer.MAX_VALUE) {

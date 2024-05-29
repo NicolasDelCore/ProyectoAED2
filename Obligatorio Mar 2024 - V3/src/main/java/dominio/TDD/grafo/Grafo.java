@@ -1,22 +1,32 @@
 package dominio.TDD.grafo;
 import dominio.TDD.*;
 
-
-import dominio.Clases.Vuelo;
-
-
-import java.util.Objects;
-
 public class Grafo<T extends Comparable<T>> {
     private Vertice[] vertices;
     private Arista[][] aristas;
     private final int maxVertices;
-    int cantidad = 0;
+    int cantidad = 0; //cantidad de vértices totales
 
     public Grafo(int maxVertices) {
         this.maxVertices = maxVertices;
         vertices = new Vertice[maxVertices];
         aristas = new Arista[maxVertices][maxVertices];
+    }
+
+    protected int getMaxVertices(){
+        return this.maxVertices;
+    }
+
+    protected int getCantidad(){
+        return this.cantidad;
+    }
+
+    protected Arista[][] getAristas(){
+        return this.aristas;
+    }
+
+    protected Vertice[] getVertices(){
+        return this.vertices;
     }
 
     public void agregarVertice(T dato) {
@@ -151,57 +161,6 @@ public class Grafo<T extends Comparable<T>> {
         }
     }
 
-    public TuplaTInt dijkstraPorMinutos(T origen, T destino) {
-
-        int posVOrigen = obtenerPos(new Vertice(origen));
-        int posVDestino = obtenerPos(new Vertice(destino));
-
-        //declaración de arrays
-        boolean[] visitados = new boolean[maxVertices];
-        int[] costos = new int[maxVertices];
-        int[] vengo = new int[maxVertices];
-
-        //inicialización de arrays
-        for (int i = 0; i < maxVertices; i++) {
-            costos[i] = Integer.MAX_VALUE;
-            vengo[i] = -1;
-            visitados[i] = false;
-        }
-
-        //Inicializar recorridas: Marcamos 0 como distancia en el nodo de origen (al marcar 0 en la dist del nodo de origen, esto inicia el dijkstra porque el nodo de origen es el primero en seleccionarse con obtenerSiguenteVerticeNoVisitadoDeMenorCosto)
-        costos[posVOrigen] = 0;
-
-        //Camino desde Origen al resto de los nodos (necesario completar para obtener camino mínimo a destino)
-        for (int v = 0; v < cantidad; v++) {
-            int pos = obtenerSiguenteVerticeNoVisitadoDeMenorCosto(costos, visitados);
-
-            if (pos != -1) {
-                visitados[pos] = true;
-
-                for (int i = 0; i < aristas.length; i++) {
-                    if (aristas[pos][i] != null && !visitados[i]) {
-                        int vueloMasCorto = vueloMasCorto(aristas[pos][i]);
-                        if (vueloMasCorto < Integer.MAX_VALUE) {
-                            int distanciaNueva = costos[pos] + vueloMasCorto;
-                            if (distanciaNueva < costos[i]) {
-                                costos[i] = distanciaNueva;
-                                vengo[i] = pos;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        //Trazamos el camino con trazarCaminoDijkstra (que nos devuelve hasta el elemento anterior al destino) y agregamos el vértice destino al final
-        String caminoRetorno = trazarCaminoDijkstra(vengo, posVDestino) + vertices[posVDestino].getDato().toString();
-
-        //Tupla para resultado
-        TuplaTInt resultado = new TuplaTInt(caminoRetorno, costos[posVDestino]);
-
-        return resultado;
-    }
-
     public TuplaTInt dijkstra(T origen, T destino) {
 
         int posVOrigen = obtenerPos(new Vertice(origen));
@@ -250,7 +209,7 @@ public class Grafo<T extends Comparable<T>> {
         return resultado;
     }
 
-    private int obtenerSiguenteVerticeNoVisitadoDeMenorCosto(int[] costos, boolean[] visitados) {
+    protected int obtenerSiguenteVerticeNoVisitadoDeMenorCosto(int[] costos, boolean[] visitados) {
         int posMin = -1;
         int min=Integer.MAX_VALUE;
         for (int i = 0; i < maxVertices; i++) {
@@ -262,7 +221,7 @@ public class Grafo<T extends Comparable<T>> {
         return posMin;
     }
 
-    private String trazarCaminoDijkstra(int[] vengo, int destino){
+    protected String trazarCaminoDijkstra(int[] vengo, int destino){
         String camino = "";
         int i = vengo[destino];
         while (i != -1){
@@ -270,18 +229,6 @@ public class Grafo<T extends Comparable<T>> {
             i = vengo[i];
         }
         return camino;
-    }
-
-    private int vueloMasCorto (Arista arista){
-        int largo = arista.elementos.largo();
-        int menorVuelo = Integer.MAX_VALUE;
-        for (int i = 0; i < largo; i++){
-            Vuelo vuelo = (Vuelo) arista.elementos.devolverPos(i);
-            if (vuelo.getMinutos() < menorVuelo) {
-                menorVuelo = (int) vuelo.getMinutos();
-            }
-        }
-        return menorVuelo;
     }
 
     //Chequea si existe una arista en cualquier dirección entre los vértices: vertice ---- vertice2
@@ -297,7 +244,7 @@ public class Grafo<T extends Comparable<T>> {
         return obtenerArista(vertice1, vertice2) != null;
     }
 
-    private int obtenerPos(Vertice v) {
+    protected int obtenerPos(Vertice v) {
         for (int i = 0; i < vertices.length; i++) {
             if (vertices[i] != null && vertices[i].equals(v)) {
                 return i;
