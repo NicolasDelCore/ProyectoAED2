@@ -336,6 +336,8 @@ public class ImplementacionSistema implements Sistema {
             return Retorno.error(Retorno.Resultado.ERROR_2, "Error 2: Los aeropuertos de origen y destino no tienen conexión posible.");
         }
 
+        //Nota: En vez de tomar como peso el peso de la arista, necesito tomar como peso el vuelo más corto de la lista de vuelos de la arista
+
         return Retorno.noImplementada();
     }
 

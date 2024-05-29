@@ -155,12 +155,12 @@ public class Grafo<T extends Comparable<T>> {
         //declaración de arrays
         boolean[] visitados = new boolean[maxVertices];
         int[] costos = new int[maxVertices];
-        String[] vengo = new String[maxVertices];
+        int[] vengo = new int[maxVertices];
 
         //inicialización de arrays
         for (int i = 0; i < maxVertices; i++) {
             costos[i] = Integer.MAX_VALUE;
-            vengo[i] = "-";
+            vengo[i] = -1;
             visitados[i] = false;
         }
 
@@ -179,24 +179,18 @@ public class Grafo<T extends Comparable<T>> {
                         int distanciaNueva = costos[pos] + (int) aristas[pos][i].peso;
                         if (distanciaNueva < costos[i]) {
                             costos[i] = distanciaNueva;
-                            vengo[v] = vertices[pos].getDato().toString();
+                            vengo[i] = pos;
                         }
                     }
                 }
             }
         }
 
-        //Agregar nodo destino
-        vengo[vengo.length -1] = vertices[posVDestino].getDato().toString();
-
-        //Formatear string de respuesta
-        String caminoRetorno = formatearArrayVengo(vengo);
+        //Trazamos el camino con trazarCaminoDijkstra (que nos devuelve hasta el elemento anterior al destino) y agregamos el vértice destino al final
+        String caminoRetorno = trazarCaminoDijkstra(vengo, posVDestino) + vertices[posVDestino].getDato().toString();
 
         //Tupla para resultado
         TuplaTInt resultado = new TuplaTInt(caminoRetorno, costos[posVDestino]);
-
-        //System.out.println("Kilometros: " + resultado.getNumero());
-        System.out.println("Array de vengos: " + resultado.getDato());
 
         return resultado;
     }
@@ -213,18 +207,13 @@ public class Grafo<T extends Comparable<T>> {
         return posMin;
     }
 
-    private String formatearArrayVengo(String[] vengo){
+    private String trazarCaminoDijkstra(int[] vengo, int destino){
         String camino = "";
-        for (int i = 0; i < vengo.length; i++){
-            if (!Objects.equals(vengo[i], "-") && !Objects.equals(vengo[i], "-1")) {
-                camino += vengo[i] + "|";
-            }
+        int i = vengo[destino];
+        while (i != -1){
+            camino = vertices[i].getDato().toString() + "|" + camino;
+            i = vengo[i];
         }
-
-        if (camino.length() > 1) { //sacar la última barrita "|" del resultado
-            camino = camino.substring(0, camino.length() - 1);
-        }
-
         return camino;
     }
 
