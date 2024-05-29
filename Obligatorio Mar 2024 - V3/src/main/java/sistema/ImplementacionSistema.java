@@ -329,7 +329,7 @@ public class ImplementacionSistema implements Sistema {
             return Retorno.error(Retorno.Resultado.ERROR_4, "Error 4: No se encontró aeropuerto de destino. Revise el CÓDIGO proveído del Aeropuerto.");
         }
 
-        TuplaTInt resultado = conexiones.dijkstra(aOrigen, aDestino);
+        TuplaTInt resultado = conexiones.dijkstraPorMinutos(aOrigen, aDestino);
 
         //2. Si no hay camino entre el origen y el destino.
         if (resultado.getNumero() == Integer.MAX_VALUE) {
@@ -338,7 +338,7 @@ public class ImplementacionSistema implements Sistema {
 
         //Nota: En vez de tomar como peso el peso de la arista, necesito tomar como peso el vuelo más corto de la lista de vuelos de la arista
 
-        return Retorno.noImplementada();
+        return Retorno.ok(resultado.getNumero(), resultado.getDato().toString());
     }
 
 
